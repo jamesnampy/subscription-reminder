@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id                String          @id @default(uuid())
+  email             String          @unique
+  password          String
+  firstName         String?
+  lastName          String?
+  phone             String?
+  emailVerified     Boolean         @default(false)
+  phoneVerified     Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  subscriptions     Subscription[]
+  notificationPrefs NotificationPreference?
+}
+
+// Subscription Model
+model Subscription {
+  id                String          @id @default(uuid())
+  userId            String
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Basic Info
+  name              String
+  provider          String
+  category          String?
+  cost              Decimal?
+  currency          String          @default("USD")
+  billingCycle      BillingCycle    @default(MONTHLY)
+
+  // Dates
+  startDate         DateTime?
+  renewalDate       DateTime
+  lastReminderSent  DateTime?
+
+  // Status & Tracking
+  status            SubscriptionStatus @default(ACTIVE)
+  cancellationStatus CancellationStatus @default(NOT_ATTEMPTED)
+  cancelledAt       DateTime?
+  cancellationNotes String?
+
+  // Detection metadata
+  detectionMethod   DetectionMethod?
+  detectionSource   String?
+
+  // Reminder settings
+  reminderDaysBefore Int[]          @default([7, 3, 1])
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  notifications     Notification[]
+
+  @@index([userId, renewalDate])
+  @@index([userId, status])
+}
+
+// Notification History
+model Notification {
+  id              String          @id @default(uuid())
+  subscriptionId  String
+  subscription    Subscription    @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  type            NotificationType
+  channel         NotificationChannel
+  status          NotificationStatus
+  scheduledFor    DateTime
+  sentAt          DateTime?
+  failedAt        DateTime?
+  errorMessage    String?
+
+  createdAt       DateTime        @default(now())
+
+  @@index([subscriptionId])
+  @@index([scheduledFor, status])
+}
+
+// User Notification Preferences
+model NotificationPreference {
+  id              String          @id @default(uuid())
+  userId          String          @unique
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  emailEnabled    Boolean         @default(true)
+  smsEnabled      Boolean         @default(false)
+
+  defaultReminderDays Int[]       @default([7, 3, 1])
+
+  // Quiet hours (24-hour format)
+  quietHoursStart Int?
+  quietHoursEnd   Int?
+  timezone        String          @default("UTC")
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Enums
+enum BillingCycle {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAUSED
+  EXPIRED
+}
+
+enum CancellationStatus {
+  NOT_ATTEMPTED
+  REMINDED
+  SUCCESSFULLY_CANCELLED
+  FORGOT_TO_CANCEL
+  DECIDED_TO_KEEP
+}
+
+enum DetectionMethod {
+  MANUAL_ENTRY
+  EMAIL_PARSING
+  DOM_DETECTION
+  BANK_IMPORT
+}
+
+enum NotificationType {
+  RENEWAL_REMINDER
+  CANCELLATION_REMINDER
+  CANCELLATION_DEADLINE
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  PUSH
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  CANCELLED
+}
