@@ -46,7 +46,7 @@ export async function processSubscriptionReminder(subscriptionId: string): Promi
     const prefs = user.notificationPrefs;
 
     // Check quiet hours
-    if (prefs && isInQuietHours(prefs.timezone, prefs.quietHoursStart, prefs.quietHoursEnd)) {
+    if (prefs && isInQuietHours(prefs.timezone, prefs.quietHoursStart ?? undefined, prefs.quietHoursEnd ?? undefined)) {
       logger.info(`User ${user.email} is in quiet hours, skipping notifications`);
       return;
     }
