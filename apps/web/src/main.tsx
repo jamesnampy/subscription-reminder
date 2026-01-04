@@ -1,4 +1,4 @@
-import React from 'react';
+import { StrictMode } from 'react'; // Change 1: Import specific part
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
