@@ -16,13 +16,13 @@ export async function comparePassword(
 
 export function generateAccessToken(userId: string): string {
   return jwt.sign({ userId }, env.JWT_SECRET as string, {
-    expiresIn: env.JWT_EXPIRES_IN as string,
+    expiresIn: env.JWT_EXPIRES_IN as any,
   });
 }
 
 export function generateRefreshToken(userId: string): string {
   return jwt.sign({ userId }, env.JWT_REFRESH_SECRET as string, {
-    expiresIn: env.JWT_REFRESH_EXPIRES_IN as string,
+    expiresIn: env.JWT_REFRESH_EXPIRES_IN as any,
   });
 }
 
