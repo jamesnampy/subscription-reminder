@@ -1,5 +1,6 @@
 {
   "name": "subscription-reminder",
+  "packageManager": "pnpm@9.1.0",
   "version": "1.0.0",
   "private": true,
   "description": "A web app to remind you to cancel subscriptions",
