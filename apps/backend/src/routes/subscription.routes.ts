@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as subscriptionController from '../controllers/subscription.controller.js';
 import { authenticate } from '../middleware/auth.middleware.js';
 
-const router = Router();
+const router: Router = Router();
 
 // All subscription routes require authentication
 router.use(authenticate);
