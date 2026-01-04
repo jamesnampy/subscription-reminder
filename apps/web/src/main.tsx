@@ -1,10 +1,10 @@
-import { StrictMode } from 'react'; // Change 1: Import specific part
+import React from 'react'; // Change 1: Import specific part
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  <React.StrictMode>
     <App />
-  </StrictMode>
+  </React.StrictMode>
 );
