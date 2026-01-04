@@ -16,7 +16,7 @@ export async function comparePassword(
 
 export function generateAccessToken(userId: string): string {
   return jwt.sign({ userId }, env.JWT_SECRET, {
-    expiresIn: env.JWT_EXPIRES_IN,
+    expiresIn: env.JWT_EXPIRES_IN as string,
   });
 }
 
